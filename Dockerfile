@@ -1,3 +1,4 @@
+
 FROM osrf/ros:melodic-desktop-full
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -60,8 +61,10 @@ RUN mkdir -p /catkin_ws/src
 # Clone packages into the workspace
 WORKDIR /catkin_ws/src
 RUN git clone https://github.com/srmainwaring/asv_wave_sim.git -b feature/fft_waves \
-  && git clone https://github.com/srmainwaring/asv_sim.git -b feature/wrsc-devel \
+  && git clone https://github.com/srmainwaring/asv_sim.git \
   && git clone https://github.com/srmainwaring/rs750.git -b feature/wrsc-devel
+#  && git clone https://github.com/AutoSail-MDH/AutoSailROS.git -b control_package
+COPY ./catkin_ws/src/AutoSailROS /catkin_ws/src/AutoSailROS
 
 # Configure, build and cleanup
 WORKDIR /catkin_ws
@@ -73,7 +76,7 @@ RUN source /opt/ros/melodic/setup.bash \
         --install \
         --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     && catkin build \
-    && rm -rf .catkin_tools .vscode build devel logs src  
+    && rm -rf .catkin_tools .vscode build devel logs
 
 # Define entrypoint
 COPY ./docker-entrypoint.sh /

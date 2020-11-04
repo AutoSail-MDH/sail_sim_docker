@@ -25,7 +25,7 @@ services:
       - "DISPLAY"
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    command: stdbuf -o L roslaunch rs750_gazebo rs750_ocean_world.launch verbose:=true
+    command: stdbuf -o L roslaunch rs750_gazebo rs750_ocean_world.launch /wind/apparent:= verbose:=true
     runtime: nvidia
     networks:
       - ros
@@ -42,6 +42,7 @@ services:
     networks:
       - ros
     restart: always
+
 
   twist-translate:
     image: rhysmainwaring/sail-sim
@@ -107,4 +108,3 @@ services:
     networks:
       - ros
     restart: always
-    
