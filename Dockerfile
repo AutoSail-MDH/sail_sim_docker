@@ -64,7 +64,6 @@ RUN git clone https://github.com/srmainwaring/asv_wave_sim.git -b feature/fft_wa
   && git clone https://github.com/srmainwaring/asv_sim.git \
   && git clone https://github.com/srmainwaring/rs750.git -b feature/wrsc-devel
 #  && git clone https://github.com/AutoSail-MDH/AutoSailROS.git -b control_package
-COPY ./catkin_ws/src/AutoSailROS /catkin_ws/src/AutoSailROS
 
 # Configure, build and cleanup
 WORKDIR /catkin_ws
@@ -75,7 +74,10 @@ RUN source /opt/ros/melodic/setup.bash \
         --extend /opt/ros/melodic \
         --install \
         --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    && catkin build \
+    && catkin build
+
+COPY ./catkin_ws/src/AutoSailROS /catkin_ws/src/AutoSailROS
+RUN catkin build ctrl_pkg sim_helper \
     && rm -rf .catkin_tools .vscode build devel logs
 
 # Define entrypoint
