@@ -4,6 +4,11 @@ FROM osrf/ros:melodic-desktop-full
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TERM=xterm
 
+#RUN apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa && \
+#    apt-get update && apt-get install -y python3.6 python3-dev python3-pip
+
+#RUN ln -sfn /usr/bin/python3.6 /usr/bin/python3 && ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /usr/bin/pip3 /usr/bin/pip
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \
     build-essential \
@@ -14,10 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mesa-utils \
     mesa-utils-extra \
     mesa-vulkan-drivers \
-    python-pip \
-    python-rosdep \
-    python-rosinstall \
-    python-rosinstall-generator \
+    ros-melodic-desktop-full \
+    python3-pip \
+    gcc gfortran musl-dev \
+    python3-setuptools \
     # python-vcstool \
     wget \
     x11-apps \
@@ -41,15 +46,39 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfftw3-dev \
     ocl-icd-opencl-dev \
     opencl-headers \
+    ros-melodic-rosbash \
+    ros-melodic-rqt-robot-steering \
     ros-melodic-hector-gazebo-plugins \
     ros-melodic-imu-tools \
+    ros-melodic-xacro \
+    ros-melodic-ros-control \
+    ros-melodic-ros-controllers \
+    ros-melodic-gazebo-ros-control \
+    ros-melodic-rqt \
+    ros-melodic-rqt-runtime-monitor \
+    ros-melodic-rqt-srv \
+    ros-melodic-rqt-image-view \
+    ros-melodic-rqt-topic \
+    ros-melodic-rqt-reconfigure \
+    ros-melodic-rqt-graph \
+    ros-melodic-rqt-robot-monitor \
+    ros-melodic-rqt-console \
+    ros-melodic-rqt-publisher \
+    ros-melodic-rqt-logger-level \
+    ros-melodic-rqt-plot \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python packages
-RUN pip install --upgrade \
-    wheel
+RUN pip3 install --upgrade \
+    setuptools \
+    wheel \
+    rosdep \
+    rospkg \
+    pydot \
+    pycryptodomex \
+    gnupg
 
-RUN pip install --upgrade \
+RUN pip3 install --upgrade \
     catkin_tools
 
 # Use bash
@@ -73,12 +102,13 @@ RUN source /opt/ros/melodic/setup.bash \
     && catkin config \
         --extend /opt/ros/melodic \
         --install \
-        --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPYTHON_EXECUTABLE=/usr/bin/python3 \
     && catkin build
 
 COPY ./catkin_ws/src/AutoSailROS /catkin_ws/src/AutoSailROS
 RUN catkin build ctrl_pkg sim_helper \
-    && rm -rf .catkin_tools .vscode build devel logs
+    && rm -rf .catkin_tools .vscode build devel logs src \
+    && apt-get update && rosdep install --from-paths . --ignore-src
 
 # Define entrypoint
 COPY ./docker-entrypoint.sh /
