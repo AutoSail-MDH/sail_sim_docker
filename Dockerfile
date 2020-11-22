@@ -119,10 +119,17 @@ RUN source /opt/ros/melodic/setup.bash \
         --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPYTHON_EXECUTABLE=/usr/bin/python3 \
     && catkin build
 
+# Install dependencies
+RUN pip3 install --upgrade \
+    empy \
+    numpy \
+    scipy \
+    pymap3d
+
 COPY ./catkin_ws/src/AutoSailROS /catkin_ws/src/AutoSailROS
 COPY ./catkin_ws/src/AutoSailROS_PP /catkin_ws/src/AutoSailROS_PP
 
-RUN apt-get update && rosdep install --from-paths src --ignore-src -y
+# RUN apt-get update && rosdep install --from-paths src --ignore-src -y
 
 RUN catkin build ctrl_pkg sim_helper path_planner \
     && rm -rf .catkin_tools .vscode build devel logs src
