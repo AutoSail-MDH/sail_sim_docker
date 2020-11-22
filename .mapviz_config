@@ -1,0 +1,46 @@
+capture_directory: ~
+fixed_frame: map
+target_frame: boat
+fix_orientation: false
+rotate_90: false
+enable_antialiasing: true
+show_displays: true
+show_status_bar: true
+show_capture_tools: true
+window_width: 1618
+window_height: 769
+view_scale: 1.000001
+offset_x: -7189097.34
+offset_y: -2102154.20
+use_latest_transforms: true
+background: "#a0a0a4"
+force_720p: false
+displays:
+  - type: mapviz_plugins/tile_map
+    name: "map"
+    config:
+      visible: true
+      collapsed: true
+      custom_sources:
+        []
+      bing_api_key: ""
+      source: Stamen (terrain)
+  - type: mapviz_plugins/navsat
+    name: "gps"
+    config:
+      visible: true
+      collapsed: true
+      topic: "/sensors/gps"
+      color: "#00ff00"
+      position_tolerance: 1.0
+      buffer_size: 0
+  - type: mapviz_plugins/plan_route
+    name: "plan_route"
+    config:
+      visible: true
+      collapsed: false
+      service: "/plan_route"
+      route_topic: "/path_planner/waypoints"
+      start_from_vehicle: false
+      color: "#73d216"
+

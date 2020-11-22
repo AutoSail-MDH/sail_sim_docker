@@ -66,6 +66,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-melodic-rqt-publisher \
     ros-melodic-rqt-logger-level \
     ros-melodic-rqt-plot \
+    ros-melodic-mapviz \
+    ros-melodic-mapviz-plugins \
+    ros-melodic-tile-map \
+    ros-melodic-multires-image \
+    python3-tk \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python packages
@@ -76,10 +81,16 @@ RUN pip3 install --upgrade \
     rospkg \
     pydot \
     pycryptodomex \
+    matplotlib \
+    pymap3d \
     gnupg
 
 RUN pip3 install --upgrade \
     catkin_tools
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-melodic-robot-localization \
+    && rm -rf /var/lib/apt/lists/*
 
 # Use bash
 SHELL ["/bin/bash", "-c"]
@@ -89,10 +100,13 @@ RUN mkdir -p /catkin_ws/src
 
 # Clone packages into the workspace
 WORKDIR /catkin_ws/src
-RUN git clone https://github.com/srmainwaring/asv_wave_sim.git -b feature/fft_waves \
-  && git clone https://github.com/srmainwaring/asv_sim.git \
-  && git clone https://github.com/srmainwaring/rs750.git -b feature/wrsc-devel
+# git clone https://github.com/srmainwaring/asv_wave_sim.git -b feature/fft_waves \
+RUN git clone https://github.com/srmainwaring/asv_sim.git
+#  && git clone https://github.com/srmainwaring/rs750.git -b feature/wrsc-devel
 #  && git clone https://github.com/AutoSail-MDH/AutoSailROS.git -b control_package
+
+COPY ./catkin_ws/src/asv_wave_sim /catkin_ws/src/asv_wave_sim
+COPY ./catkin_ws/src/rs750 /catkin_ws/src/rs750
 
 # Configure, build and cleanup
 WORKDIR /catkin_ws
@@ -106,9 +120,14 @@ RUN source /opt/ros/melodic/setup.bash \
     && catkin build
 
 COPY ./catkin_ws/src/AutoSailROS /catkin_ws/src/AutoSailROS
-RUN catkin build ctrl_pkg sim_helper \
-    && rm -rf .catkin_tools .vscode build devel logs src \
-    && apt-get update && rosdep install --from-paths . --ignore-src
+COPY ./catkin_ws/src/AutoSailROS_PP /catkin_ws/src/AutoSailROS_PP
+
+RUN apt-get update && rosdep install --from-paths src --ignore-src -y
+
+RUN catkin build ctrl_pkg sim_helper path_planner \
+    && rm -rf .catkin_tools .vscode build devel logs src
+
+COPY ./.mapviz_config /root/
 
 # Define entrypoint
 COPY ./docker-entrypoint.sh /
