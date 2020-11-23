@@ -134,7 +134,7 @@ COPY ./catkin_ws/src/AutoSailROS_PP /catkin_ws/src/AutoSailROS_PP
 RUN catkin build ctrl_pkg sim_helper path_planner \
     && rm -rf .catkin_tools .vscode build devel logs src
 
-COPY ./.mapviz_config /root/
+COPY ./.mapviz_config /root/.mapviz_config
 
 # Define entrypoint
 COPY ./docker-entrypoint.sh /
