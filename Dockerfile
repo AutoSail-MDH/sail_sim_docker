@@ -127,11 +127,10 @@ RUN pip3 install --upgrade \
     pymap3d
 
 COPY ./catkin_ws/src/AutoSailROS /catkin_ws/src/AutoSailROS
-COPY ./catkin_ws/src/AutoSailROS_PP /catkin_ws/src/AutoSailROS_PP
 
 # RUN apt-get update && rosdep install --from-paths src --ignore-src -y
 
-RUN catkin build ctrl_pkg sim_helper path_planner \
+RUN catkin build autosail \
     && rm -rf .catkin_tools .vscode build devel logs src
 
 COPY ./.mapviz_config /root/.mapviz_config
